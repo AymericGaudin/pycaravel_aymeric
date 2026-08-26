@@ -194,9 +194,9 @@ def main(project, upload_mounts, allowed_subjects, working_dir, nextcloud_url,
     shares = dict([(os.path.basename(item["path"]), item)
                    for item in shares.data
                    if item["share_type"] == ShareType.GROUP])
-    logger.debug(f"Shares: {list(shares.keys())}")
+    logger.debug(f"ALL the shares: {list(shares.keys())}")
     groups = session.get_groups().data["groups"]
-    logger.debug(f"Groups: {groups}")
+    logger.debug(f"ALL the groups: {groups}")
     data = []
     DataItem = namedtuple("DataItem",
                           ("uploadname uploaddir collectname collectdir "
@@ -221,7 +221,7 @@ def main(project, upload_mounts, allowed_subjects, working_dir, nextcloud_url,
         if session.isfile(
             "admin", "/".join(["/", project, name, "wip"])):
             logger.debug(f"wip file in {path}. Remove it if you want to "
-                        "integrate data.")
+                         "integrate data.")
             continue
         # check associated collected folder exists
         collected_path = path.replace("-upload", "-collected")
@@ -259,7 +259,7 @@ def main(project, upload_mounts, allowed_subjects, working_dir, nextcloud_url,
         if not is_local_file:
             raise ValueError(
                 f"Mount '{path}' is not a mounted to the good folder.")
-    logger.info(f"Folder to integrate: {[item.uploaddir for item in data]}")
+    logger.info(f"Folders to integrate: {[item.uploaddir for item in data]}")
 
     # Step 3: generate a report for each folder to be included in the
     # collected data.
