@@ -18,7 +18,7 @@ from .loader_base import LoaderBase
 
 
 class EDF(LoaderBase):
-    """ Define the mp4 loader.
+    """ Define the edf loader.
     """
     allowed_extensions = [".edf"]
 
