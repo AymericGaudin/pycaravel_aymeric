@@ -334,6 +334,7 @@ def main(project, upload_mounts, allowed_subjects, working_dir, nextcloud_url,
 
     # Step 4: integrate the data listed by the 'list_<family>_datasets'
     # function or generate report output.
+    warnings = {"overwrite_warning": []}
     for item, report in outputs:
         logger.info(f"Integrate item: {item}")
         # delete old reports from upload directory
@@ -363,7 +364,10 @@ def main(project, upload_mounts, allowed_subjects, working_dir, nextcloud_url,
                     os.path.isfile(os.path.join(item.collectdir, name))
                 )
                 if not allow_overwrite and is_already_collected:
-                    logger.info(f"- {name}: SKIP")
+                    msg = (f"{name} is already collected and overwrite"
+                           "is disabled: SKIP")
+                    logger.info(f"- {msg}")
+                    warnings["overwrite_warning"].append(msg)
                 else:
                     logger.info(f"- {name}...")
                     path = "/".join([project, item.collectname])
@@ -423,6 +427,12 @@ def main(project, upload_mounts, allowed_subjects, working_dir, nextcloud_url,
                         [project, item.uploadname, filename]))
                 if not res.is_ok:
                     raise ValueError(f"Unable to upload '{filename}'.")
+        # save warnings if needed
+        if any(len(val) != 0 for val in warnings.values()):
+            local_warningfile = os.path.join(local_report_dir,
+                                             f"warnings_{runtime['timestamp']}.json")
+            with open(local_warningfile, "wt") as open_file:
+                json.dump(warnings, open_file, indent=2)
         # add the wip file in the upload folder
         res = session.upload_file(
             "admin", local_filepath=local_wipfile,
